@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend en nodejsprima",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev src/index.ts",
+    "start": "nodemon build/index.js",
+    "tsc": "tsc"
+  },
+  "author": "lagh",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/node": "22.9.0",
+    "nodemon": "3.1.7",
+    "prisma": "5.22.0",
+    "ts-node-dev": "2.0.0",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "express": "4.21.1",
+    "yup": "1.4.0"
+  }
+}

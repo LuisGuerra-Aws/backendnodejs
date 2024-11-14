@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model personas {
+  id_persona       Int    @id @default(autoincrement())
+  person_email     String @db.VarChar(150)
+  person_last_name String @db.VarChar(40)
+  person_mobile    BigInt
+  person_name      String @db.VarChar(30)
+  id_rol           Int?   @unique(map: "UK5cvkd6p24f91a9v3gupsv2t6y")
+  rol_id_rol       Int?   @unique(map: "UK5ki5wdy8wdicda2ru794nl1ky")
+}
+
+model roles {
+  id_rol          Int    @id @default(autoincrement())
+  rol_name        String @db.VarChar(30)
+  rol_description String @db.VarChar(200)
+}
+
+model accesos {
+  id_persona      Int       @id @default(autoincrement())
+  person_email    String?   @db.VarChar(100)
+  person_password String?   @db.VarChar(255)
+  create_at       DateTime? @db.DateTime(0)
+  update_at       DateTime? @db.DateTime(0)
+}
+
+model asignaciones {
+  id_asignacion                   Int       @id @default(autoincrement())
+  id_proyecto                     Int
+  id_tarea                        Int
+  id_miembro                      Int
+  asigna_orden                    Int
+  asigna_numero_semanas           Int?
+  asigna_numero_semanas_revisadas Int?
+  asigna_fecha_inicio             DateTime? @db.DateTime(0)
+  asigna_fecha_fin                DateTime? @db.DateTime(0)
+  asigna_fecha_fin_real           DateTime? @db.DateTime(0)
+  asigna_porcentaje_asignacion    Decimal?  @db.Decimal(6, 3)
+  asigna_porcentaje_avance        Decimal?  @db.Decimal(6, 3)
+  asigna_porcentaje_desviacion    Decimal?  @db.Decimal(6, 3)
+  asigna_esta_terminada           String?   @default("N") @db.VarChar(1)
+
+  @@index([id_miembro], map: "fk_asignacion_miembros")
+  @@index([id_proyecto], map: "fk_asignacion_proyecto")
+  @@index([id_tarea], map: "fk_asignacion_tareas")
+}
+
+model controlasignaciones {
+  id_control                  Int       @id @default(autoincrement())
+  id_asignacion               Int
+  control_fecha               DateTime? @db.DateTime(0)
+  control_porcentaje_avance   Decimal?  @db.Decimal(6, 3)
+  control_hay_avance          String?   @default("S") @db.VarChar(1)
+  control_descripcion_reporte String?   @db.VarChar(1000)
+
+  @@index([id_asignacion], map: "fk_control_asignacion")
+}
+
+model funciones {
+  id_funcion          Int     @id @default(autoincrement())
+  funcion_name        String  @db.VarChar(50)
+  funcion_description String? @db.VarChar(150)
+  funcion_codigo      Int?
+}
+
+model miembros {
+  id_miembro                  Int     @id @default(autoincrement())
+  id_persona                  Int
+  miembro_capacidad_ejecucion Int?
+  esta_disponible             String? @default("S") @db.VarChar(1)
+
+  @@index([id_persona], map: "FKPersonas")
+}
+
+model permisos {
+  id_permiso Int @id
+  orden      Int
+  id_rol     Int
+  id_funcion Int
+
+  @@index([id_funcion], map: "fk_Permisos_funciones")
+  @@index([id_rol], map: "fk_Permisos_roles")
+}
+
+model post {
+  id          Int         @id @default(autoincrement())
+  title       String
+  slug        String
+  content     String      @db.Text
+  status      post_status @default(draft)
+  view_count  Int         @default(0)
+  is_featured Boolean     @default(false)
+  user_id     Int
+  created_at  DateTime    @default(now())
+  updated_at  DateTime
+}
+
+model proyectos {
+  id_proyecto                Int       @id @default(autoincrement())
+  id_persona                 Int
+  proyecto_name              String?   @db.VarChar(100)
+  proyecto_descripcion       String?   @db.VarChar(2000)
+  proyecto_fecha_inicial     DateTime? @db.DateTime(0)
+  proyecto_fecha_final       DateTime? @db.DateTime(0)
+  proyecto_porcentaje_avance Decimal?  @db.Decimal(6, 3)
+  proyecto_esta_terminado    String?   @default("N") @db.VarChar(1)
+
+  @@index([id_persona], map: "FKPersonasProyectos")
+}
+
+model tareas {
+  id_tarea                    Int      @id @default(autoincrement())
+  tarea_name                  String   @db.VarChar(50)
+  tarea_description           String?  @db.VarChar(150)
+  tarea_numero_semanas        Int?
+  tarea_porcentaje_asignacion Decimal? @db.Decimal(6, 3)
+}
+
+model user {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique(map: "User_email_key") @db.VarChar(100)
+  password   String   @db.VarChar(100)
+  full_name  String
+  birth_date DateTime @db.Date
+  created_at DateTime @default(now())
+  updated_at DateTime
+}
+
+enum post_status {
+  draft
+  published
+  archived
+}
